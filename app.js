@@ -59,7 +59,6 @@
     function MenuSearchService($http, ApiBasePath) {
     var service = this;
 
-  
     service.getMatchedMenuItems = function (searchTerm) {
       return $http({
         method: 'GET',
@@ -70,7 +69,7 @@
         var foundItems = [];
 
         for(var i=0; i < menu_items.length; i++){
-          if (menu_items[i].description.indexOf(searchTerm.trim()) >= 0) {
+          if (menu_items[i].description.indexOf(searchTerm) >= 0) {
             foundItems.push(menu_items[i]);
           }
         }
