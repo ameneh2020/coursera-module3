@@ -18,9 +18,6 @@
           foundItems: '<',
           onRemove: '&'
         },
-        controller: FoundItemsDirectiveController,
-        controllerAs: 'list',
-        bindToController: true
       };
   
       return ddo;
@@ -28,11 +25,6 @@
   
   }());
 
-  function FoundItemsDirectiveController() {
-    var list = this;
-  
-  }
-  
   //NarrowItDownController
   NarrowItDownController.$inject = ['$scope', 'MenuSearchService'];
   function NarrowItDownController ($scope, MenuSearchService) {
