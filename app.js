@@ -68,7 +68,7 @@
 
         var menu_items = result.data.menu_items;
         var foundItems = [];
-        searchTerm=
+        
         for(var i=0; i < menu_items.length; i++){
           if (menu_items[i].description.indexOf(searchTerm) > 0) {
             foundItems.push(menu_items[i]);
