@@ -1,20 +1,6 @@
 <div>
-  <table class="table">
-    <thead>
-       <tr>
-        <th>name</th>
-        <th>ShortName</th>
-        <th>description</th>
-        <th></th>
-       </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="item in foundItems">
-        <td>{{item.name}}</td> 
-        <td>{{item.short_name }}</td> 
-        <td>{{item.description}}</td>
-        <td><button ng-click="onRemove({index:$index})" class="btn btn-danger">Don't want this one!</button></td>
-      </tr>
-    </tbody>
-  </table>
+
+   <div ng-repeat="item in foundItems">
+      {{item.name}} , {{item.short_name }} , {{item.description}} <button ng-click="onRemove({index:$index})" class="btn btn-danger">Don't want this one!</button></td>
+   </div>
 </div>
