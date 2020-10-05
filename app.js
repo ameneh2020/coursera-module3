@@ -1,84 +1,104 @@
-(function(){
-  'use strict';
 
-  angular.module('NarrowItDownApp', [])
+
+
+
+  (function () {
+    'use strict';
+    
+    angular.module('NarrowItDownApp', [])
     .controller('NarrowItDownController', NarrowItDownController)
     .service('MenuSearchService', MenuSearchService)
+    .constant('ApiBasePath', "https://davids-restaurant.herokuapp.com")
     .directive('foundItems', FoundItemsDirective)
-    .constant('ApiBasePath', "https://davids-restaurant.herokuapp.com");
-
-
-    //directive
-    function FoundItemsDirective () {
+    ;
+    
+    function FoundItemsDirective() {
       var ddo = {
-        restrict: 'E',
         templateUrl: 'foundItems.html',
-        replace: true,
         scope: {
-          foundItems: '<',
+          items: '<',
+          myTitle: '@title',
           onRemove: '&'
         },
+        controller: FoundItemsDirectiveController,
+        controllerAs: 'menu',
+        bindToController: true
       };
-  
       return ddo;
     }
-  
-  }());
-
-  //NarrowItDownController
-  NarrowItDownController.$inject = ['$scope', 'MenuSearchService'];
-  function NarrowItDownController ($scope, MenuSearchService) {
-    var narrowItDown = this;
-    narrowItDown.error = false; 
-    narrowItDown.loader = false; 
-
-   
-    narrowItDown.removeMenuItem = function (index) {
-      narrowItDown.found.splice(index, 1);
-    };
-
-    narrowItDown.showListMenu = function () {
-      var promise = MenuSearchService.getMatchedMenuItems(narrowItDown.searchTerm);
-      narrowItDown.loader = true;
-
-      promise.then(function (response) {
-        narrowItDown.found = response;
-        narrowItDown.loader = false;
-        if(narrowItDown.found.length < 1) {
-          narrowItDown.error = true;
-        } else {
-          narrowItDown.error = false;
+    
+    function FoundItemsDirectiveController() {
+      var menu = this;
+      menu.foundItems = function () {
+        if (menu.items===undefined){
+          return false
         }
-      }).catch(function (error) {
-        console.log('Errore: ',error);
-      })
-    }
-  }
-
-    MenuSearchService.$inject = ['$http', 'ApiBasePath']
-    function MenuSearchService($http, ApiBasePath) {
-    var service = this;
-
-    service.getMatchedMenuItems = function (searchTerm) {
-      return $http({
-        method: 'GET',
-        url: (ApiBasePath + "/menu_items.json"),
-      }).then(function (result) {
-
-        var menu_items = result.data.menu_items;
-        var foundItems = [];
-
-        for(var i=0; i < menu_items.length; i++){
-          if (menu_items[i].description.indexOf(searchTerm) >= 0) {
-            foundItems.push(menu_items[i]);
+        else{
+          if (menu.items.length>0) {
+            return true;
           }
         }
-
-        return foundItems;
+        return false;
+      };
+    }
+    
+    NarrowItDownController.$inject = ['MenuSearchService'];
+    function NarrowItDownController(MenuSearchService) {
+    
+      var menu = this;
+    
+      var promise = MenuSearchService.getAllMenuItems();
+      var losItems;
+    
+      promise.then(function (response) {
+        losItems = response.data;
+      })
+      .catch(function (error) {
+        console.log("Something went terribly wrong.");
       });
-    };
-
-  }
+    
+      menu.getMatchedMenuItems = function (searchString) {
+        menu.items = MenuSearchService.getMatchedMenuItems(searchString, losItems);
+      };
+    
+      menu.removeItem = function (itemIndex) {
+        menu.items.splice(itemIndex, 1);
+      };
+    }
+    
+    MenuSearchService.$inject = ['$http', 'ApiBasePath'];
+    function MenuSearchService($http, ApiBasePath) {
+      var service = this;
+      service.getAllMenuItems = function () {
+        var response = $http({
+          method: "GET",
+          url: (ApiBasePath + "/menu_items.json")
+        });
+        return response;
+      };
+      service.getMatchedMenuItems = function (cadenaDeBusqueda, unArray) {
+        var encontrados = [];
+        var contador = 0;
+        if (cadenaDeBusqueda!="")
+        {
+          for (var i = 0; i < unArray.menu_items.length; i++) {
+            var name = unArray.menu_items[i].name;
+            if (name.toLowerCase().indexOf(cadenaDeBusqueda.toLowerCase()) !== -1) {
+              encontrados[contador] = unArray.menu_items[i];
+              contador += 1;
+            }
+          }
+        }
+        else {
+          console.log("empty search string detected")
+        }
+        return encontrados;
+      };
+    }
+    
+    })();
+    
+    
 
 
 
